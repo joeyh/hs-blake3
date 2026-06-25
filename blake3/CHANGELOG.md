@@ -1,3 +1,9 @@
+# Version 0.3.2
+
+* Build on non-x86 systems without needing to explicitly disable
+  x86-specific build flags.
+
+
 # Version 0.3.1
 
 * Depend on `ram` rather than the unmaintained library `memory`.
