@@ -11,7 +11,7 @@ category: Cryptography
 build-type: Simple
 synopsis: BLAKE3 hashing algorithm
 description: Bindings to the official fast BLAKE3 implementations in assembly
-             and C, with support for AVX-512, AVX2, SSE 2, and SSE 4.1.
+             and C, with support for AVX-512, AVX2, SSE 2, SSE 4.1, and NEON.
 homepage: https://github.com/k0001/hs-blake3
 bug-reports: https://github.com/k0001/hs-blake3/issues
 tested-with: GHC == 9.2.5
@@ -38,6 +38,16 @@ flag sse41
 flag sse2
   description: Enable SSE 2 instructions (only used for x86)
   default: True
+  manual: True
+
+flag neon-aarch64
+  description: Enable NEON instructions (only used for aarch64)
+  default: True
+  manual: True
+
+flag neon-arm
+  description: Enable NEON instructions (only used for 32 bit arm)
+  default: False
   manual: True
 
 common basic
@@ -112,6 +122,14 @@ library
   else
     cc-options: -DBLAKE3_NO_SSE2
 
+  -- NEON support
+  if flag(neon-aarch64)
+    if arch(aarch64)
+      c-sources: cbits/blake3_neon.c
+  if flag(neon-arm)
+    if arch(arm)
+      c-sources: cbits/blake3_neon.c
+      cc-options: -DBLAKE3_USE_NEON=1 -mfpu=neon-vfpv4 -mfloat-abi=hard
 
 test-suite test
   import: basic
